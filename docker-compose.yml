@@ -1,0 +1,26 @@
+version: '3'
+services:
+  backend:
+    image: smcebi:dev
+    build: .
+    env_file: .env
+    ports:
+      - "${DJANGO_PORT:-8000}:8000"
+    volumes:
+      - ./src:/code
+    command: ['python', 'smcebi/manage.py', 'runserver', '0.0.0.0:8000']
+    restart: on-failure
+
+  postgres:
+    image: mdillon/postgis
+    env_file: .env
+    labels:
+      - "traefik.enable=false"
+    ports:
+      - 5432:5432
+
+  pgadmin:
+    image: fenglc/pgadmin4
+    env_file: .env
+    ports:
+      - 5050:5050
