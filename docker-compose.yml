@@ -8,8 +8,6 @@ services:
       - "${DJANGO_PORT:-8000}:8000"
     volumes:
       - ./src:/code
-    command: ['python', 'smcebi/manage.py', 'runserver', '0.0.0.0:8000']
-    restart: on-failure
 
   postgres:
     image: mdillon/postgis
@@ -17,7 +15,7 @@ services:
     labels:
       - "traefik.enable=false"
     ports:
-      - 5432:5432
+      - 5555:5432
 
   pgadmin:
     image: fenglc/pgadmin4
