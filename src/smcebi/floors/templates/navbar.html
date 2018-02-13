@@ -12,10 +12,26 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
+            {% if request.path == '/floors/lowerground' %}
             <li class="active"><a href="lowerground">Lowerground floor</a></li>
+            {% else %}
+            <li><a href="lowerground">Lowerground floor</a></li>
+            {% endif %}
+            {% if request.path == '/floors/ground' %}
+            <li class="active"><a href="ground">Ground floor</a></li>
+            {% else %}
             <li><a href="ground">Ground floor</a></li>
+            {% endif %}
+            {% if request.path == '/floors/first' %}
+            <li class="active"><a href="first">First floor</a></li>
+            {% else %}
             <li><a href="first">First floor</a></li>
+            {% endif %}
+            {% if request.path == '/floors/second' %}
+            <li class="active"><a href="second">Second floor</a></li>
+            {% else %}
             <li><a href="second">Second floor</a></li>
+            {% endif %}
         </ul>
         <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">

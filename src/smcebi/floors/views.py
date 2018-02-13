@@ -1,17 +1,24 @@
 from django.shortcuts import render
+import json
 from django.views.generic.base import TemplateView
+from django.core.serializers.json import DjangoJSONEncoder
 
+from room.models import Room
 # Create your views here.
 
 
 class FloorView(TemplateView):
     baselayer_filename = None
+    emps_data_url_name = 'emp_geojson'
+    rooms_data_url_name = 'rooms_geojson'
     template_name = 'index.html'
 
     def get_context_data(self, **kwargs):
         context = super(FloorView, self).get_context_data(**kwargs)
         context['folder_name'] = self.fname
-        context['room_data'] = self.room_data_url_name
+        context['floor_no'] = self.floor
+        context['room_data_url'] = self.rooms_data_url_name
+        context['emps_data_url'] = self.emps_data_url_name
         context['title'] = self.title
         context['x1y1'], context['x1y2'] = self.x1y1, self.x1y2
         context['x2y1'], context['x2y2'] = self.x2y1, self.x2y2
@@ -20,28 +27,28 @@ class FloorView(TemplateView):
 class LowerGroundFloorView(FloorView):
     title = 'SMCEBI - Lowerground Floor'
     fname = 'lowerground_floor'
-    room_data_url_name = 'lowerground_rooms'
-    x1y1, x1y2 = [1.6180366932206667,4.503536224365235]
-    x2y1, x2y2 = [1.51799559802871,4.176006317138673]
+    floor = '-1'
+    x1y1, x1y2 = [1.60388022712266,4.42028045654297]
+    x2y1, x2y2 = [1.5538599350392837,4.256515502929688]
 
 class GroundFloorView(FloorView):
-    x1y1, x1y2 = [1.622841289603995,4.695453643798829]
-    x2y1, x2y2 = [1.5121611516421967,4.3679237365722665]
+    x1y1, x1y2 = [1.6035370388463466,4.609107971191407]
+    x2y1, x2y2 = [1.5535167385054869,4.445343017578126]
     title = 'SMCEBI - Ground Floor'
     fname = 'ground_floor'
-    room_data_url_name = 'ground_rooms'
+    floor = '0'
 
 class FirstFloorView(FloorView):
-    x1y1, x1y2 = [1.6224981045261873, 4.872608184814454]
-    x2y1, x2y2 = [1.511817948424566, 4.5450782775878915]
+    x1y1, x1y2 = [1.6031080534200255, 4.794073104858398]
+    x2y1, x2y2 = [1.5530877427598309, 4.630308151245118]
     title = 'SMCEBI - First Floor'
     fname = 'first_floor'
-    room_data_url_name = 'first_rooms'
+    floor = '1'
 
 class SecondFloorView(FloorView):
-    x1y1, x1y2 = [1.6212969562954151,5.05645751953125]
-    x2y1, x2y2 = [1.510616736735647, 4.7289276123046875]
+    x1y1, x1y2 = [1.6044808064677112,4.979467391967774]
+    x2y1, x2y2 = [1.554460528839269, 4.815702438354493]
     title = 'SMCEBI - Second Floor'
     fname = 'second_floor'
-    room_data_url_name = 'second_rooms'
+    floor = '2'
 

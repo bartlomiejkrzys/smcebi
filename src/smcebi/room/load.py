@@ -12,7 +12,7 @@ def run(shp_fpath, mapping, verbose=True):
         verbose = False
 
     lm = LayerMapping(Room, shp_fpath, mapping,
-                      transform=True, encoding='iso-8859-1')
+                      transform=True, encoding='utf8')
 
     lm.save(strict=True, verbose=verbose)
 
@@ -26,7 +26,7 @@ def main(verbose):
         'name': 'Name',
         'geom' : 'POLYGON',
     }
-    # @TODO fix ground_floor!
+
     for foldername in [
         'lowerground_floor',
         'ground_floor',

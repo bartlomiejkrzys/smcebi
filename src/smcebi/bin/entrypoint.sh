@@ -31,5 +31,6 @@ echo "from django.contrib.auth.models import User;  User.objects.filter(email='$
 
 echo "INFO: Loading rooms from .shp file"
 echo "from room.load import main; main($VERBOSE)" | python $project_path/manage.py shell
+echo "from employee.load import main; main($VERBOSE)" | python $project_path/manage.py shell
 
 python $project_path/manage.py runserver 0.0.0.0:$DJANGO_PORT

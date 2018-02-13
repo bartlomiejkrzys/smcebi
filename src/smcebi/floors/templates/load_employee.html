@@ -1,0 +1,57 @@
+    {% load static %}
+    <script>
+    let layer_employees;
+    function pop_employees(feature, layer) {
+        layer.on({
+            mouseout: function(e) {
+                for (i in e.target._eventParents) {
+                    e.target._eventParents[i].resetStyle(e.target);
+                }
+            },
+            mouseover: highlightFeature,
+        });
+        popupContent = feature.properties.popupContent;
+        layer.bindPopup(popupContent, {maxHeight: 400});
+    }
+
+    var femaleIcon = L.icon({
+        iconUrl: "{% static 'markers/female_icon.png' %}",
+        iconSize: [20.0, 20.0]
+    })
+
+    var maleIcon = L.icon({
+        iconUrl: "{% static 'markers/male_icon.png' %}",
+        iconSize: [20.0, 20.0]
+    })
+
+    function setMarker(feature, latlng) {
+        switch (feature.properties.sex) {
+            case 'M':
+                return L.marker(latlng, {'icon': maleIcon})
+                break;
+            case 'F':
+                return L.marker(latlng, {'icon': femaleIcon})
+                break
+        }
+    };
+
+    function load_employees(map, bounds_group) {
+        var url = '{% url ""|add:emps_data_url floor=floor_no %}';
+        map.createPane('pane_employees');
+        map.getPane('pane_employees').style.zIndex = 402;
+        map.getPane('pane_employees').style['mix-blend-mode'] = 'normal';
+        $.getJSON(url, function(data) {
+            var layer = L.geoJSON(data, {
+                pane: 'pane_employees',
+                pointToLayer: setMarker,
+                onEachFeature: pop_employees,
+            })
+            layer.addTo(map)
+            bounds_group.addLayer(layer)
+            layerOrder.push(layer)
+            layer_employees = layer;
+        })
+    };
+
+    </script>
+
