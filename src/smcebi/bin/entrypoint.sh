@@ -29,8 +29,16 @@ echo "INFO: Creating superuser."
 
 echo "from django.contrib.auth.models import User;  User.objects.filter(email='$email').delete();  User.objects.create_superuser('$user', '$email', '$pass')" | python $project_path/manage.py shell
 
+echo "INFO: Removing old data."
+echo "from utils import remove_data; remove_data()" | python $project_path/manage.py shell
+
 echo "INFO: Loading rooms from .shp file"
+
 echo "from room.load import main; main($VERBOSE)" | python $project_path/manage.py shell
 echo "from employee.load import main; main($VERBOSE)" | python $project_path/manage.py shell
+
+echo "INFO: Assigning employees to rooms."
+
+echo "from utils import assign_employee_to_room; assign_employee_to_room($VERBOSE)" | python $project_path/manage.py shell
 
 python $project_path/manage.py runserver 0.0.0.0:$DJANGO_PORT

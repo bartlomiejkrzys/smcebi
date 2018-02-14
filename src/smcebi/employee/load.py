@@ -24,7 +24,6 @@ def main(verbose):
         'degree' : 'Degree',
         'surname' : 'Surname',
         'sex' : 'Sex',
-        'roomid' : 'RoomID',
         'email' : 'Email',
         'url' : 'Url',
         'phone' : 'Phone',

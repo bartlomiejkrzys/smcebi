@@ -30,15 +30,6 @@ class Room(models.Model):
     name = models.CharField(max_length=250)
     geom = models.PolygonField(srid=4326)
 
-    objects = models.Manager()
-    lowerground_floor = LGFloorManager()
-    ground_floor = GFloorManager()
-    first_floor = FFloorManager()
-    second_floor = SFloorManager()
-
-    def __str__(self):
-        return 'Room {}'.format(self.symbol)
-
     def to_dict(self):
         return {
             'Symbol': self.symbol,
@@ -57,4 +48,12 @@ class Room(models.Model):
         ) for (name, value) in self.to_dict().items()]
         return '<table>' + ''.join(table_insides) + '</table>'
 
+    def __repr__(self):
+        return '{cls}<Symbol={symbol} Wing={wing}>'.format(
+            cls=self.__class__.__name__,
+            wing=self.wing,
+            symbol=self.symbol,
+        )
 
+    def __str__(self):
+        return 'Room {}'.format(self.symbol)
