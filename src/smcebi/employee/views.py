@@ -12,7 +12,7 @@ serialize_properties = (
 )
 
 def geojson_view(request, floor):
-    queryset = Employee.objects.filter(floor=floor).all()[:10]
+    queryset = Employee.objects.filter(floor=floor)
     serializer = GeoJSONSerializer()
     response = HttpJSONResponse()
     serializer.serialize(
