@@ -39,7 +39,8 @@
             })
             layer.addTo(map);
             bounds_group.addLayer(layer)
-            layerOrder.push(layer)
+            // layerOrder.push(layer)
+            overlayLayers['Rooms'] = layer;
             layer_rooms = layer;
             // Add search by room
             map.addControl(new L.Control.Search({

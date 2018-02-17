@@ -40,6 +40,7 @@
         <script src="{% static 'js/labelgun.min.js' %}"></script>
         <script src="{% static 'js/labels.js' %}"></script>
         <script src="{% static 'js/leaflet-search.js' %}"></script>
+        <script src="{% static 'js/custom-leaflet.js' %}"></script>
         <script type='text/javascript' src='http://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/leaflet.markercluster.js'></script>
         <script src="{% static "" %}data/{{ folder_name }}/baselayer.js"></script>
         <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
@@ -48,7 +49,6 @@
             function highlightFeature(e) {
                 highlightLayer = e.target;
                 if (e.target.feature.geometry.type === 'Polygon') {
-                    console.log("TAK, POKOJ!")
                 highlightLayer.setStyle({
                     weight: 3,
                     color: '#123',
@@ -58,116 +58,103 @@
                     highlightLayer.bringToFront();
                 }
             }}
-        </script>
-        {% block map_init %}
-        <script>
-            var x1y1, x1y2, x2y1, x2y2;
-            x1y1 = parseFloat("{{ x1y1 }}");
-            x1y2 = parseFloat("{{ x1y2 }}");
-            x2y1 = parseFloat("{{ x2y1 }}");
-            x2y2 = parseFloat("{{ x2y2 }}");
-            console.log(x1y1, x1y2, x2y1, x2y2);
-            var map = L.map('map', {
-                zoomControl:true,
-                maxZoom:16,
-                minZoom:14,
-            }).fitBounds([
-                [x1y1, x1y2],
-                [x2y1, x2y2]])
-            var bounds_group = new L.featureGroup([]);
-            var layerOrder = new Array();
 
-        </script>
-        {% endblock map_init %}
 
-        <script>
-            function setBounds() {
-            }
-            var hash = new L.Hash(map);
-            map.attributionControl.addAttribution('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a>');
-        </script>
-    {% block load_rooms %}
-        {% include 'load_rooms.html' %}
-    {% endblock load_rooms %}
+        // Styling employees
+        // It should be placed inside leaflet-custom.js
+        // but for now I've no idea how to read
+        // image from js, nothing I've tried so far seems to work.
+        var femaleIcon = L.icon({
+            iconUrl: "{% static 'markers/female_icon.png' %}",
+            iconSize: [20.0, 20.0]
+        })
 
-    {% block load_employee %}
-        {% include 'load_employee.html' %}
-    {% endblock load_employee %}
-    <script>
-    {% block load_baselayer %}
-        function style_baselayer() {
-            return {
-                pane: 'pane_baselayer',
-                opacity: 1,
-                color: 'rgba(80,80,80,1.0)',
-                lineCap: 'square',
-                lineJoin: 'bevel',
-                weight: 1.0,
-                fillOpacity: 1,
+        var maleIcon = L.icon({
+            iconUrl: "{% static 'markers/male_icon.png' %}",
+            iconSize: [20.0, 20.0]
+        })
+
+        function set_marker(feature, latlng) {
+            console.log('Setting marker', feature)
+            switch (feature.properties.sex) {
+                case 'M':
+                    return L.marker(latlng, {'icon': maleIcon})
+                    break;
+                case 'F':
+                    return L.marker(latlng, {'icon': femaleIcon})
+                    break
             }
         };
+
+        // Map initialization
+        var x1y1, x1y2, x2y1, x2y2;
+        x1y1 = parseFloat("{{ x1y1 }}");
+        x1y2 = parseFloat("{{ x1y2 }}");
+        x2y1 = parseFloat("{{ x2y1 }}");
+        x2y2 = parseFloat("{{ x2y2 }}");
+        var map = L.map('map', {
+            zoomControl:true,
+            maxZoom:16,
+            minZoom:14,
+        }).fitBounds([
+            [x1y1, x1y2],
+            [x2y1, x2y2]])
+        // Adding preloaded baselayer from js file
         map.createPane('pane_baselayer');
         map.getPane('pane_baselayer').style.zIndex = 400;
         map.getPane('pane_baselayer').style['mix-blend-mode'] = 'normal';
-        var layer_baselayer = new L.geoJson(json_baselayer, {
-            attribution: '<a href=""></a>',
+        var layer_baselayer = new L.GeoJSON(json_baselayer, {
+            attribution: "<a href=''/>",
             pane: 'pane_baselayer',
             style: style_baselayer,
         });
-        bounds_group.addLayer(layer_baselayer);
-        layerOrder.push(layer_baselayer);
-        map.addLayer(layer_baselayer);
+        var layersLoaded = {};
+        layersLoaded['Baselayer'] = layer_baselayer
+        layer_baselayer.addTo(map);
 
-        load_employees(map, bounds_group)
-        load_rooms(map, bounds_group)
+        // var control = new L.control.layers({'Baselayer': layer_baselayer})
+        // control.addTo(map);
 
-    {% endblock load_baselayer %}
 
-        function restackLayers() {
-            for (index=0; index < layerOrder.length; index ++) {
-                layerOrder[index].bringToFront();
-            }
-        }
+    function addOverlay(url, name, opts, map) {
+        $.getJSON(url, function(data) {
+            layer = new L.GeoJSON(data, opts);
+            layersLoaded[name] = layer;
+            layer.addTo(map);
+            control.addOverlay(layer, name);
+        })
+    }
 
-        function stackLayers() {
-            for (index = 0; index < layerOrder.length; index++) {
-                map.removeLayer(layerOrder[index]);
-                map.addLayer(layerOrder[index]);
-            }
-        }
+    // Create panes
+    map.createPane('pane_employees');
+    map.getPane('pane_employees').style.zIndex = 402;
+    map.getPane('pane_employees').style['mix-blend-mode'] = 'normal';
+    map.createPane('pane_rooms');
+    map.getPane('pane_rooms').style.zIndex = 401;
+    map.getPane('pane_rooms').style['mix-blend-mode'] = 'normal';
 
-        map.on('overlayadd', restackLayers);
+    // Create employees opts
+    var get_employees_url = '{% url ""|add:emps_data_url floor=floor_no %}';
+    emp_opts = {
+        onEachFeature: pop_employees,
+        pointToLayer: set_marker,
+        pane: 'pane_employees',
+    }
+    // Create rooms opts
+    var get_rooms_url = '{% url ""|add:room_data_url floor=floor_no %}';
+    rooms_opts = {
+        onEachFeature: pop_rooms,
+        style: style_rooms,
+        pane: 'pane_rooms',
+    };
 
-        // <style>
-            // .legend {
-            //     line-height: 18px;
-            //     color: #555;
-            // }
-            // .legend i{
-            //     width: 18px;
-            //     height: 18px;
-            //     float: left;
-            //     margin-right: 8px;
-            //     opacity: 0.7;
-            // }
-            // </style>
-            var legend = L.control({position: 'bottomright'});
-            legend.onAdd = function(map) {
-                var div = L.DomUtil.create('div', 'info legend');
-                var colors = [
-                    '#b5df97', '#f09986', '#f59053', '#fdbe73',
-                    '#fede99', '#ffffbf', '#ddefcf', '#bce143',
-                    '#91c6de', '#5ea0ca'];
-                var wings = [
-                    'A', 'B', 'C', 'D', 'E', 'F',
-                    'G', 'H', 'P', 'S'];
-                for (var i = 0; i < colors.length; i ++){
-                    div.innerHTML +=
-                        '<i style="background:' + colors[i] + '"></i>' + 'Wing ' + wings[i] + '<br>';
-                }
-            }
-            legend.addTo(map);
+    // addOverlay(get_employees_url, 'employees', emp_opts, map)
+    // addOverlay(get_rooms_url, 'rooms', rooms_opts, map)
 
+
+</script>
+    <script>
+        map.attributionControl.addAttribution('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a>');
         // Create legend part
         var baseMaps = {};
         // L.control.layers({}, {'<img src={% static  "legend/baselayer.png"%} /> employees': layer_employees}).addTo(map);

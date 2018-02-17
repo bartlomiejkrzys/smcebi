@@ -24,7 +24,8 @@
         iconSize: [20.0, 20.0]
     })
 
-    function setMarker(feature, latlng) {
+    function set_marker(feature, latlng) {
+        console.log('Setting marker', feature)
         switch (feature.properties.sex) {
             case 'M':
                 return L.marker(latlng, {'icon': maleIcon})
@@ -46,12 +47,12 @@
                 pointToLayer: setMarker,
                 onEachFeature: pop_employees,
             })
+            console.log('ADDING EMPS LAYER', layer);
             layer.addTo(map)
             bounds_group.addLayer(layer)
-            layerOrder.push(layer)
+            // layerOrder.push(layer)
+            overlayLayers['Employees'] = layer;
             layer_employees = layer;
         })
     };
-
-    </script>
-
+</script>
