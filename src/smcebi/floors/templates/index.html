@@ -31,7 +31,6 @@
             {% endblock navbar %}
 
         <div id="map"> </div>
-        <script src="{% static 'js/qgis2web_expressions.js' %}"></script>
         <script src="{% static 'js/leaflet.js' %}"></script>
         <script src="{% static 'js/leaflet.rotatedMarker.js' %}"></script>
         <script src="{% static 'js/leaflet.pattern.js' %}"></script>
@@ -55,6 +54,9 @@
                     color: '#123',
                     fillOpacity: '0.5',
                 })
+                if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                    highlightLayer.bringToFront();
+                }
             }}
         </script>
         {% block map_init %}
@@ -134,22 +136,43 @@
             }
         }
 
-        map.on('overlayadd', restackLayers)
+        map.on('overlayadd', restackLayers);
+
+        // <style>
+            // .legend {
+            //     line-height: 18px;
+            //     color: #555;
+            // }
+            // .legend i{
+            //     width: 18px;
+            //     height: 18px;
+            //     float: left;
+            //     margin-right: 8px;
+            //     opacity: 0.7;
+            // }
+            // </style>
+            var legend = L.control({position: 'bottomright'});
+            legend.onAdd = function(map) {
+                var div = L.DomUtil.create('div', 'info legend');
+                var colors = [
+                    '#b5df97', '#f09986', '#f59053', '#fdbe73',
+                    '#fede99', '#ffffbf', '#ddefcf', '#bce143',
+                    '#91c6de', '#5ea0ca'];
+                var wings = [
+                    'A', 'B', 'C', 'D', 'E', 'F',
+                    'G', 'H', 'P', 'S'];
+                for (var i = 0; i < colors.length; i ++){
+                    div.innerHTML +=
+                        '<i style="background:' + colors[i] + '"></i>' + 'Wing ' + wings[i] + '<br>';
+                }
+            }
+            legend.addTo(map);
 
         // Create legend part
         var baseMaps = {};
-        L.control.layers(baseMaps,{'<img src={% static  "legend/employee.png"%} /> employees': layer_employees,'<img src="legend/baselayer_1.png" /> baselayer': layer_baselayer,'<img src="legend/rooms_0.png" /> rooms': layer_rooms}).addTo(map);
-
-        // Add search by room
-        // map.addControl(new L.Control.Search({
-        //     layer: layer_rooms,
-        //     initial: false,
-        //     hideMarkerOnCollapse: true,
-        //     propertyName: 'Symbol',
-        //     container: 'search'
-        // }));
+        // L.control.layers({}, {'<img src={% static  "legend/baselayer.png"%} /> employees': layer_employees}).addTo(map);
+        // L.control.layers(baseMaps,{'<img src={% static  "legend/employee.png"%} /> employees': layer_employees,'<img src="legend/baselayer_1.png" /> baselayer': layer_baselayer,'<img src="legend/rooms_0.png" /> rooms': layer_rooms}).addTo(map);
         </script>
 {% endblock content %}
-<h1>{{ room_data_url }}</h1>
     </body>
 </html>
