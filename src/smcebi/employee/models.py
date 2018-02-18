@@ -17,29 +17,6 @@ class Employee(models.Model):
     floor = models.IntegerField()
     geom = models.PointField(srid=4326)
 
-    def to_dict(self):
-        return {
-            'Name': ' '.join((
-                self.degree, self.name, self.surname)),
-            'Email': self.email,
-            'Phone': self.phone,
-        }
-
-    @property
-    def popupContent(self):
-        row_temp = '<tr>\
-            <th scope="row">{property_name}</th>\
-            <td>{property_value}</td>\
-            </tr>'
-        table_insides = [row_temp.format(
-            property_name=name,
-            property_value=value
-        ) for (name, value) in self.to_dict().items()]
-        url_tag = '<tr><th scope="row">URL<td><a href={}>{}</a></td></tr>'
-        table_insides += url_tag.format(self.url, self.url)
-        return '<table>' + ''.join(table_insides) + '</table>'
-
-
     def __repr__(self):
         return '{cls}<Name={name} Surname={surname}>'.format(
             cls=self.__class__.__name__,

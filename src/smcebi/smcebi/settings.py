@@ -49,6 +49,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -99,13 +100,12 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
         'LOCATION': '127.0.0.1:11211',
-        'CACHE_TIME': '3600',
     }
 }
 
-CACHE_TTL = 60 * 15
 CACHE_MIDDLEWARE_SECONDS = 60 * 15
-# CACHE_MIDDLEWARE_KEY_PREFIX = 'APP'
+CACHE_MIDDLEWARE_ALIAS = 'default'  
+CACHE_MIDDLEWARE_KEY_PREFIX = 'APP'
 
 
 # Password validation

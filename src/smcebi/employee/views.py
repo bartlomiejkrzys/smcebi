@@ -6,9 +6,14 @@ from .models import Employee
 
 
 serialize_properties = (
-    'popupContent',
     'geom',
     'sex',
+    'name',
+    'surname',
+    'phone',
+    'email',
+    'degree',
+    'url',
 )
 
 def geojson_view(request, floor):

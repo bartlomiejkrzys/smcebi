@@ -8,13 +8,15 @@ from django.core.cache import cache
 from .models import Room
 # Create your views here.
 
+from django.views.decorators.cache import cache_page
 serialize_properties = (
     'color',
     'geom',
-    'popupContent',
+    'symbol',
+    'name',
 )
 
-
+@cache_page(60 * 15)
 def geojson_view(request, floor):
     queryset = Room.objects.filter(floor=floor)
     serializer = GeoJSONSerializer()

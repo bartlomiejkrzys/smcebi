@@ -6,6 +6,8 @@ from django.core.serializers.json import DjangoJSONEncoder
 from room.models import Room
 # Create your views here.
 
+from django.views.decorators.cache import cache_page
+
 
 class FloorView(TemplateView):
     baselayer_filename = None

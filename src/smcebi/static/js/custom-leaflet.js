@@ -1,5 +1,22 @@
 
 // Employee functions
+
+
+function employeePopup(properties) {
+    return `<table>
+                <tr>
+                    <th scope="row">Name</th>
+                        <td>${properties.degree} ${properties.name} ${properties.surname}&nbsp;</td></tr>
+                    <th scope="row">Email</th>
+                        <td> ${properties.email}&nbsp;</td></tr>
+                    <th scope="row">Phone</th>
+                    <td> ${properties.phone}&nbsp;</td></tr>
+                    <th scope="row">URL</th>
+                    <td> <a href=${properties.url}>${properties.url}&nbsp;</a></td></tr>
+                </tr>\
+           </table>`
+}
+
 function pop_employees(feature, layer) {
     layer.on({
         mouseout: function(e) {
@@ -9,7 +26,7 @@ function pop_employees(feature, layer) {
         },
         mouseover: highlightFeature,
     });
-    popupContent = feature.properties.popupContent;
+    popupContent = employeePopup(feature.properties);
     layer.bindPopup(popupContent, {maxHeight: 400});
 }
 
@@ -36,6 +53,18 @@ function set_marker(feature, latlng) {
 
 // Rooms functions
 
+
+function roomPopup(properties) {
+    return `<table>
+            <tr>
+                <th scope="row">Name</th>
+                    <td>${properties.name}&nbsp;</td></tr>
+                <th scope="row">Symbol</th>
+                    <td> ${properties.symbol} &nbsp;</td></tr>
+            </tr>\
+            </table>`
+}
+
 function pop_rooms(feature, layer) {
 layer.on({
     mouseout: function(e) {
@@ -45,7 +74,7 @@ layer.on({
     },
     mouseover: highlightFeature,
 });
-popupContent = feature.properties.popupContent;
+popupContent = roomPopup(feature.properties);
 layer.bindPopup(popupContent, {maxHeight: 400});
 };
 
