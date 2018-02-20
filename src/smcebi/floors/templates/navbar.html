@@ -1,4 +1,4 @@
-<nav class="navbar navbar-default" role="navigation">
+<nav class="navbar navbar-default" role="navigation" style="background-color:  #283038; margin-bottom: 0px;">
         <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
@@ -7,52 +7,37 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="#">Brand</a>
+        <a class="navbar-brand" href="/">SMCEBI</a>
     </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
             {% if request.path == '/floors/lowerground' %}
-            <li class="active"><a href="lowerground">Lowerground floor</a></li>
+            <li class="active"><a href={% url "lowerground_floor" %}>Lowerground floor</a></li>
             {% else %}
-            <li><a href="lowerground">Lowerground floor</a></li>
+            <li><a href={% url "lowerground_floor" %}>Lowerground floor</a></li>
             {% endif %}
             {% if request.path == '/floors/ground' %}
-            <li class="active"><a href="ground">Ground floor</a></li>
+            <li class="active"><a href={% url "ground_floor" %}>Ground floor</a></li>
             {% else %}
-            <li><a href="ground">Ground floor</a></li>
+            <li><a href={% url "ground_floor" %}>Ground floor</a></li>
             {% endif %}
             {% if request.path == '/floors/first' %}
-            <li class="active"><a href="first">First floor</a></li>
+            <li class="active"><a href={% url "first_floor" %}>First floor</a></li>
             {% else %}
-            <li><a href="first">First floor</a></li>
+            <li><a href={% url "first_floor" %}>First floor</a></li>
             {% endif %}
             {% if request.path == '/floors/second' %}
-            <li class="active"><a href="second">Second floor</a></li>
+            <li class="active"><a href={% url "second_floor" %}>Second floor</a></li>
             {% else %}
-            <li><a href="second">Second floor</a></li>
+            <li><a href={% url "second_floor" %}>Second floor</a></li>
             {% endif %}
         </ul>
         <ul class="nav navbar-nav navbar-right">
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Select <b class="caret"></b></a>
-                <ul class="dropdown-menu" role="menu">
-                    <li><a href="#">Room</a></li>
-                    <li><a href="#">Employee</a></li>
-                </ul>
-            </li>
             <li>
                 <div class="col-md-12 col-md-12">
-                        <!-- <form class="navbar-form navbar-right" role="search">
-                                <div class="form-group col-lg-2">
-                                    <div id="search"></div> 
-                                </div> -->
                     <form class="navbar-form" role="search">
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Nie ruszaj grubasie.." name="q" id="search">
-                            <div class="input-group-btn">
-                                <button class="btn btn-default" type="submit" onclick="onClick()"><i class="glyphicon glyphicon-search"></i></button>
-                            </div>
+                        <div id="search">
                         </div>
                     </form>
                 </div>
