@@ -29,6 +29,7 @@ def main(verbose):
         'phone' : 'Phone',
         'position' : 'Position',
         'floor': 'Floor',
+        'search': 'Search',
         'geom' : 'POINT',
     }
 

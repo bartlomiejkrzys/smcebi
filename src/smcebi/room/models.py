@@ -28,25 +28,8 @@ class Room(models.Model):
     floor = models.IntegerField()
     color = models.CharField(max_length=10)
     name = models.CharField(max_length=250)
+    search = models.CharField(max_length=50)
     geom = models.PolygonField(srid=4326)
-
-    def to_dict(self):
-        return {
-            'Symbol': self.symbol,
-            'Name': self.name,
-        }
-
-    @property
-    def popupContent(self):
-        row_temp = '<tr>\
-            <th scope="row">{property_name}</th>\
-            <td>{property_value}</td>\
-            </tr>'
-        table_insides = [row_temp.format(
-            property_name=name,
-            property_value=value
-        ) for (name, value) in self.to_dict().items()]
-        return '<table>' + ''.join(table_insides) + '</table>'
 
     def __repr__(self):
         return '{cls}<Symbol={symbol} Wing={wing}>'.format(

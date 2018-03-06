@@ -14,6 +14,7 @@ serialize_properties = (
     'email',
     'degree',
     'url',
+    'search'
 )
 
 def geojson_view(request, floor):

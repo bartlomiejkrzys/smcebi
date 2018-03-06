@@ -12,9 +12,9 @@
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
         <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link rel="stylesheet" href="{% static 'css/leaflet.css' %}">
-        <link rel="stylesheet" herf="{% static 'css/smcebi.css' %}">
         <link rel="stylesheet" href="{% static 'css/leaflet-search.css' %}">
         <link rel="stylesheet" href="{% static 'css/qgis2web.css' %}">
+        <link rel="stylesheet" herf="{% static 'css/smcebi.css' %}">
         <style>
         html, body, #map {
             width: 100%;
@@ -69,7 +69,6 @@
         <script src="{% static 'js/labels.js' %}"></script>
         <script src="{% static 'js/leaflet-search.js' %}"></script>
         <script src="{% static 'js/custom-leaflet.js' %}"></script>
-        <script type='text/javascript' src='https://cdnjs.com/libraries/leaflet-tilelayer-geojson'></script>
         <!-- Below file contains baselayer data -->
         <script src="{% static "" %}data/{{ folder_name }}/baselayer.js"></script>
         <script>
@@ -155,15 +154,15 @@
         control.addTo(map);
 
     // Add possibility to search objects
-    function addSearchControl(layer, map) {
+    function addSearchControl(map) {
 
         searchControl = new L.control.search({
-            layer: layer,
+            layer: layersSearch,
             initial: false,
-            propertyName: 'symbol',
+            propertyName: 'search',
             collapsed: false,
             textPlaceholder: 'Search room or employee..',
-            textErr: 'Room not found.',
+            textErr: 'Object not found.',
             container: 'search',
             zoom: 12,
         }).on('search:locationfound', function(event) {
@@ -193,11 +192,13 @@
             if (name == 'employees') {
                 control.addOverlay(layer,
                     '<img src={% static "legend/staff.png" %}/> Employees');
+                layersSearch.addLayer(layer);
             }
             else {
                 control.addOverlay(layer,
                     '<img src={% static "legend/rsz2_rooms.png" %}/> Rooms');
-                addSearchControl(layer, map);
+                layersSearch.addLayer(layer);
+                addSearchControl(map);
             }
         })
     }

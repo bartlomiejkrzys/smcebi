@@ -14,6 +14,7 @@ serialize_properties = (
     'geom',
     'symbol',
     'name',
+    'search',
 )
 
 @cache_page(60 * 15)

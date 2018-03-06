@@ -24,6 +24,7 @@ def main(verbose):
         'floor' : 'Floor',
         'color': 'Color',
         'name': 'Name',
+        'search': 'Search',
         'geom' : 'POLYGON',
     }
 

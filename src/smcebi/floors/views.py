@@ -32,7 +32,6 @@ class LowerGroundFloorView(FloorView):
     floor = '-1'
     x1y1, x1y2 = [1.60388022712266,4.42028045654297]
     x2y1, x2y2 = [1.5538599350392837,4.256515502929688]
-
 class GroundFloorView(FloorView):
     title = 'SMCEBI - Ground Floor'
     fname = 'ground_floor'

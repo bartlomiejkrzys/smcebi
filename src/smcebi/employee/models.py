@@ -15,6 +15,7 @@ class Employee(models.Model):
     phone = models.CharField(max_length=15)
     position = models.CharField(max_length=50)
     floor = models.IntegerField()
+    search = models.CharField(max_length=50)
     geom = models.PointField(srid=4326)
 
     def __repr__(self):
