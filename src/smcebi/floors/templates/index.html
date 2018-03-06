@@ -8,16 +8,11 @@
         <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-capable" content="yes">
-
-        <!-- GEOJSON TO TILE LAYER LIB -->
-        <!-- <script src="https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.js"></script> -->
-
-        <!-- ENDOF LIBS -->
         <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ==" crossorigin=""/>
         <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
         <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-        <link rel="stylesheet" herf="{% static 'css/smcebi.css' %}">
         <link rel="stylesheet" href="{% static 'css/leaflet.css' %}">
+        <link rel="stylesheet" herf="{% static 'css/smcebi.css' %}">
         <link rel="stylesheet" href="{% static 'css/leaflet-search.css' %}">
         <link rel="stylesheet" href="{% static 'css/qgis2web.css' %}">
         <style>
@@ -75,6 +70,7 @@
         <script src="{% static 'js/leaflet-search.js' %}"></script>
         <script src="{% static 'js/custom-leaflet.js' %}"></script>
         <script type='text/javascript' src='https://cdnjs.com/libraries/leaflet-tilelayer-geojson'></script>
+        <!-- Below file contains baselayer data -->
         <script src="{% static "" %}data/{{ folder_name }}/baselayer.js"></script>
         <script>
             var highlightLayer;
@@ -130,39 +126,43 @@
         }).fitBounds([
             [x1y1, x1y2],
             [x2y1, x2y2]])
+
         // Adding preloaded baselayer from js file
         map.createPane('pane_baselayer');
         map.getPane('pane_baselayer').style.zIndex = 400;
-        map.getPane('pane_baselayer').style['mix-blend-mode'] = 'normal';
-        var layer_baselayer = new L.GeoJSON(json_baselayer, {
-            attribution: "<a href=''/>",
-            pane: 'pane_baselayer',
-            style: style_baselayer,
-        });
-        var layersLoaded = {};
+        map.getPane('pane_baselayer').style[
+            'mix-blend-mode'] = 'normal';
+        var layer_baselayer = new L.GeoJSON(
+            json_baselayer, {
+                pane: 'pane_baselayer',
+                style: style_baselayer,
+            });
 
-        // Keep layers on which user can search
-        var layersSearch = new L.LayerGroup();
-        var searchControl;
-        layersLoaded['Baselayer'] = layer_baselayer
+        // Add baselayer to map
         layer_baselayer.addTo(map);
 
+        // Store all loaded layers
+        var layersLoaded = {};
+
+        layersLoaded['Baselayer'] = layer_baselayer
+
+        // Keep searchable layers
+        var layersSearch = new L.LayerGroup();
+        var searchControl;
+
+        // Create map control (visible on the top right side) with baselayer
         var control = new L.control.layers({'<img src={% static "legend/floor2.png" %}/> Baselayer': layer_baselayer})
         control.addTo(map);
 
-
+    // Add possibility to search objects
     function addSearchControl(layer, map) {
-        console.log('LAYER', layer);
 
         searchControl = new L.control.search({
             layer: layer,
             initial: false,
             propertyName: 'symbol',
             collapsed: false,
-            // moveToLocation: function(latlng, title, map) {
-            //     map.panTo(latlng)
-            // },
-            textPlaceholder: 'Search room..',
+            textPlaceholder: 'Search room or employee..',
             textErr: 'Room not found.',
             container: 'search',
             zoom: 12,
@@ -176,23 +176,33 @@
         searchControl.addTo(map);
     }
 
-
+    // Load layers async.
     function addOverlay(url, name, opts, map) {
+        // :param url: url to call for geoJSON data
+        // :param name: layer name
+        // :param opts: layer options
+        // :param map: leaflet map object
+
+        // Create leaflet geoJSON layer and attach it to map.
+        // Also allow user to enable/disable layer by adding it to
+        // layer control
         $.getJSON(url, function(data) {
             layer = new L.GeoJSON(data, opts);
             layersLoaded[name] = layer;
             layer.addTo(map);
             if (name == 'employees') {
-                control.addOverlay(layer, '<img src={% static "legend/staff.png" %}/> Employees');
+                control.addOverlay(layer,
+                    '<img src={% static "legend/staff.png" %}/> Employees');
             }
             else {
-                control.addOverlay(layer, '<img src={% static "legend/rsz2_rooms.png" %}/> Rooms');
+                control.addOverlay(layer,
+                    '<img src={% static "legend/rsz2_rooms.png" %}/> Rooms');
                 addSearchControl(layer, map);
             }
         })
     }
 
-    // Create panes
+    // Create panes for rooms and employees
     map.createPane('pane_employees');
     map.getPane('pane_employees').style.zIndex = 402;
     map.getPane('pane_employees').style['mix-blend-mode'] = 'normal';
@@ -200,14 +210,14 @@
     map.getPane('pane_rooms').style.zIndex = 401;
     map.getPane('pane_rooms').style['mix-blend-mode'] = 'normal';
 
-    // Create employees opts
+    // Create employees layer opts
     var get_employees_url = '{% url ""|add:emps_data_url floor=floor_no %}';
     emp_opts = {
         onEachFeature: pop_employees,
         pointToLayer: set_marker,
         pane: 'pane_employees',
     }
-    // Create rooms opts
+    // Create rooms layer opts
     var get_rooms_url = '{% url ""|add:room_data_url floor=floor_no %}';
     rooms_opts = {
         onEachFeature: pop_rooms,
@@ -215,6 +225,7 @@
         pane: 'pane_rooms',
     };
 
+    // Asynchronously load layers and add to map
     addOverlay(get_employees_url, 'employees', emp_opts, map)
     addOverlay(get_rooms_url, 'rooms', rooms_opts, map)
 
@@ -269,8 +280,6 @@
         };
         legend.addTo(map);
 
-
-   
         </script>
 {% endblock content %}
     </body>

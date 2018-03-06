@@ -17,7 +17,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Room',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(
+                    auto_created=True, primary_key=True,
+                    serialize=False, verbose_name='ID')),
                 ('wing', models.CharField(max_length=3)),
                 ('symbol', models.CharField(max_length=30)),
                 ('type', models.CharField(max_length=50)),
@@ -28,3 +30,5 @@ class Migration(migrations.Migration):
             ],
         ),
     ]
+
+

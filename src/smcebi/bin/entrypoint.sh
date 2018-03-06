@@ -2,7 +2,10 @@
 project_path=/code/smcebi
 pass=smcebiadmin
 user=root
-email=admin@admin.com
+email=$SMCEBI_ADMIN_EMAIL
+if [ !$email ]; then
+    email=admin@admin.com
+fi
 timeout=1
 timeout_limit=300
 connected=false

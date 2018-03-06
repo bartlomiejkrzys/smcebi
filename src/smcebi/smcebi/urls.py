@@ -25,5 +25,5 @@ urlpatterns = [
     url(r'^rooms/', include('room.urls')),
     url(r'^floors/', include('floors.urls')),
     url(r'^employees/', include('employee.urls')),
-    url(r'^$', include('home.urls')),
+    url(r'^', include('home.urls')),
 ]
