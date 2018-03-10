@@ -47,6 +47,7 @@
     top:100%;
     left:5%;
     margin-top: 15%;
+    width: 80%;
     float:left;
     list-style:none;
     padding-left:0;
@@ -70,4 +71,15 @@
     color:#e00;
     font-weight:700;
     border-radius:.25em
+}
+.leaflet-control-search .search-input {
+	display:block;
+	float:left;
+	background:white;
+	border:1px solid black;
+	border-radius:5px;
+	height:35px;
+    width: 200px;
+	padding:0 0 0 2px;
+	margin:0 0 5px 10px;
 }
