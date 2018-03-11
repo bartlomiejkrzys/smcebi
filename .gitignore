@@ -3,5 +3,8 @@ __pycache__/
 .env
 venv
 .vscode/
-**.shp
-**/**/*.shp
+**/*.shp
+**/*.dbf
+**/*.prj
+**/*.qpj
+**/*.shx
