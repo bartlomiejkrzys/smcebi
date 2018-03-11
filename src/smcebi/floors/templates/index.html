@@ -2,7 +2,6 @@
 <!doctype html>
 <html lang="en">
     <head>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
@@ -219,10 +218,13 @@
 </script>
     <style>
         .container {
-    display: flex;
-    flex-direction: column;
-    width: auto;
-}
+        display: flex;
+        flex-direction: column;
+        width: auto;
+    }
+    a:hover {
+        background-color: green;
+    }
     </style>
 
     <script>
@@ -259,7 +261,7 @@
                 div.innerHTML += `
                                     <div style="display: flex; flex-direction: row; width: 100px;">
                                         <div style="background-color: ${getColor(wings[i])}; width: 20px; height: 20px; border: 1px solid rgba(0, 0, 0, .2)">
-                                        <div style="padding-left: 21px; margin-left: 20px;"><b>${wings[i]}</b>_Wing&nbsp;</div>
+                                        <div style="padding-left: 21px; margin-left: 20px;"><b>${wings[i]}</b>&nbspWing&nbsp;</div>
                                     </div>`
             }
             div.innerHTML += `</div>`

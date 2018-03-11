@@ -1,4 +1,5 @@
 #!/bin/bash
+
 project_path=/code/smcebi
 
 echo "INFO: Loading rooms from .shp file"
