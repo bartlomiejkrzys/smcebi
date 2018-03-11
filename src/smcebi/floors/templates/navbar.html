@@ -1,0 +1,54 @@
+<nav class="navbar navbar-default" role="navigation" style="background-color:  #283038; margin-bottom: 0px;">
+        <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">SMCEBI</a>
+    </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+            {% if request.path == '/floors/lowerground' %}
+            <li class="active"><a href={% url "lowerground_floor" %}>Lowerground floor</a></li>
+            {% else %}
+            <li><a href={% url "lowerground_floor" %}>Lowerground floor</a></li>
+            {% endif %}
+            {% if request.path == '/floors/ground' %}
+            <li class="active"><a href={% url "ground_floor" %}>Ground floor</a></li>
+            {% else %}
+            <li><a href={% url "ground_floor" %}>Ground floor</a></li>
+            {% endif %}
+            {% if request.path == '/floors/first' %}
+            <li class="active"><a href={% url "first_floor" %}>First floor</a></li>
+            {% else %}
+            <li><a href={% url "first_floor" %}>First floor</a></li>
+            {% endif %}
+            {% if request.path == '/floors/second' %}
+            <li class="active"><a href={% url "second_floor" %}>Second floor</a></li>
+            {% else %}
+            <li><a href={% url "second_floor" %}>Second floor</a></li>
+            {% endif %}
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li>
+                <div class="col-md-12 col-md-12">
+                    <form class="navbar-form" role="search">
+                        <div id="search">
+                        </div>
+                    </form>
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<script>
+    function onClick() {
+    }
+
+
+</script>

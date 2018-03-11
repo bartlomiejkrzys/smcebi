@@ -1,0 +1,66 @@
+html,
+body {
+    background: #777
+}
+.site-main.row {
+    margin: 0
+}
+.header {
+    background: #C5E0DC
+}
+.primary-col,.secondary-col {
+    background-color: #ddd;
+    padding:10px;
+}
+.navbar {
+    margin: 0 0 10px 0
+}
+.inner {
+  min-height:100%;
+  background:#fff;
+  border:1px solid #ccc;
+}
+
+/* needed to override jQuery */
+@media (max-width:767px) { 
+	.primary-col,
+	.secondary-col {
+	    height: auto!important
+	}
+	.site-main {
+	    padding-bottom: 0px!important
+	}
+}
+
+/* larger viewport layout */
+@media (min-width:768px) {
+	html,
+	body {
+	    height: 100%;
+	    width: 100%;
+	}
+	#page {
+	    height: 100%;
+	    height: auto !important;
+	    min-height: 100%;
+	}
+	.site-main {
+	    height: 100%;
+        padding:0 10px;
+	}
+	.secondary-col {
+	    border-right: 10px solid #777
+	}
+}
+
+.leaflet-control-search .search-tooltip{
+	position:relative;
+	/* top:100%; */
+	margin-left: 100px;
+	left:50%;
+	/* float:left; */
+	list-style:none;padding-left:0;min-width:120px;max-height:122px;box-shadow:1px 1px 6px rgba(0,0,0,.4);background-color:rgba(0,0,0,.25);z-index:1010;overflow-y:auto;overflow-x:hidden;cursor:pointer}
+
+a:hover {
+	background-color: green;
+}

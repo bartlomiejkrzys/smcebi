@@ -1,0 +1,275 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ==" crossorigin=""/>
+        <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" href="{% static 'css/leaflet.css' %}">
+        <link rel="stylesheet" href="{% static 'css/leaflet-search.css' %}">
+        <link rel="stylesheet" href="{% static 'css/qgis2web.css' %}">
+        <link rel="stylesheet" herf="{% static 'css/smcebi.css' %}">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        .leaflet-control-search .search-button {
+            display:block;
+            float:left;
+            width:35px;
+            height:35px;
+            background: url('../static/images/search-icon2.png') no-repeat 2px 2px #283038;
+            border-radius:4px;
+        }
+
+        .leaflet-control-search .search-button:hover {
+            background: url('../images/search-icon2.png') no-repeat 30px 42px #283038;
+        }
+        </style>
+        <title>{{ title }}</title>
+    </head>
+
+    <body>
+        {% block content %}
+            {% block navbar %}
+                {% include 'navbar.html' %}
+            {% endblock navbar %}
+
+        <div id="map"> </div>
+        <script src="{% static 'js/leaflet.js' %}"></script>
+        <script src="{% static 'js/leaflet.rotatedMarker.js' %}"></script>
+        <script src="{% static 'js/leaflet.pattern.js' %}"></script>
+        <script src="{% static 'js/leaflet-hash.js' %}"></script>
+        <script src="{% static 'js/Autolinker.min.js' %}"></script>
+        <script src="{% static 'js/rbush.min.js' %}"></script>
+        <script src="{% static 'js/labelgun.min.js' %}"></script>
+        <script src="{% static 'js/labels.js' %}"></script>
+        <script src="{% static 'js/leaflet-search.js' %}"></script>
+        <script src="{% static 'js/custom-leaflet.js' %}"></script>
+        <!-- Below file contains baselayer data -->
+        <script src="{% static "" %}data/{{ folder_name }}/baselayer.js"></script>
+        <script>
+            var highlightLayer;
+            function highlightFeature(e) {
+                highlightLayer = e.target;
+                if (e.target.feature.geometry.type === 'Polygon') {
+                highlightLayer.setStyle({
+                    weight: 3,
+                    color: '#123',
+                    fillOpacity: '0.5',
+                })
+                if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                    highlightLayer.bringToFront();
+                }
+            }}
+
+
+        // Styling employees
+        // It should be placed inside leaflet-custom.js
+        // but for now I've no idea how to read
+        // image from js, nothing I've tried so far seems to work.
+        var femaleIcon = L.icon({
+            iconUrl: "{% static 'markers/female_icon.png' %}",
+            iconSize: [20.0, 20.0]
+        })
+
+        var maleIcon = L.icon({
+            iconUrl: "{% static 'markers/male_icon.png' %}",
+            iconSize: [20.0, 20.0]
+        })
+
+        function set_marker(feature, latlng) {
+            switch (feature.properties.sex) {
+                case 'M':
+                    return L.marker(latlng, {'icon': maleIcon})
+                    break;
+                case 'F':
+                    return L.marker(latlng, {'icon': femaleIcon})
+                    break
+            }
+        };
+
+        // Map initialization
+        var x1y1, x1y2, x2y1, x2y2;
+        x1y1 = parseFloat("{{ x1y1 }}");
+        x1y2 = parseFloat("{{ x1y2 }}");
+        x2y1 = parseFloat("{{ x2y1 }}");
+        x2y2 = parseFloat("{{ x2y2 }}");
+        var map = L.map('map', {
+            zoomControl:true,
+            maxZoom:16,
+            minZoom:14,
+        }).fitBounds([
+            [x1y1, x1y2],
+            [x2y1, x2y2]])
+
+        // Adding preloaded baselayer from js file
+        map.createPane('pane_baselayer');
+        map.getPane('pane_baselayer').style.zIndex = 400;
+        map.getPane('pane_baselayer').style[
+            'mix-blend-mode'] = 'normal';
+        var layer_baselayer = new L.GeoJSON(
+            json_baselayer, {
+                pane: 'pane_baselayer',
+                style: style_baselayer,
+            });
+
+        // Add baselayer to map
+        layer_baselayer.addTo(map);
+
+        // Store all loaded layers
+        var layersLoaded = {};
+
+        layersLoaded['Baselayer'] = layer_baselayer
+
+        // Keep searchable layers
+        var layersSearch = new L.LayerGroup();
+        var searchControl;
+
+        // Create map control (visible on the top right side) with baselayer
+        var control = new L.control.layers({'<img src={% static "legend/floor2.png" %}/> Baselayer': layer_baselayer})
+        control.addTo(map);
+
+    // Add possibility to search objects
+    function addSearchControl(map) {
+
+        searchControl = new L.control.search({
+            layer: layersSearch,
+            initial: false,
+            propertyName: 'search',
+            collapsed: false,
+            textPlaceholder: 'Search room or employee..',
+            textErr: 'Object not found.',
+            container: 'search',
+            zoom: 12,
+        }).on('search:locationfound', function(event) {
+            event.layer.openPopup()
+        }).on('search:collapsed', function(event) {
+            layer.eachLayer(function(feature) {
+                layer.resetStyle(feature)
+            })
+        })
+        searchControl.addTo(map);
+    }
+
+    // Load layers async.
+    function addOverlay(url, name, opts, map) {
+        // :param url: url to call for geoJSON data
+        // :param name: layer name
+        // :param opts: layer options
+        // :param map: leaflet map object
+
+        // Create leaflet geoJSON layer and attach it to map.
+        // Also allow user to enable/disable layer by adding it to
+        // layer control
+        $.getJSON(url, function(data) {
+            layer = new L.GeoJSON(data, opts);
+            layersLoaded[name] = layer;
+            layer.addTo(map);
+            if (name == 'employees') {
+                control.addOverlay(layer,
+                    '<img src={% static "legend/staff.png" %}/> Employees');
+                layersSearch.addLayer(layer);
+            }
+            else {
+                control.addOverlay(layer,
+                    '<img src={% static "legend/rsz2_rooms.png" %}/> Rooms');
+                layersSearch.addLayer(layer);
+                addSearchControl(map);
+            }
+        })
+    }
+
+    // Create panes for rooms and employees
+    map.createPane('pane_employees');
+    map.getPane('pane_employees').style.zIndex = 402;
+    map.getPane('pane_employees').style['mix-blend-mode'] = 'normal';
+    map.createPane('pane_rooms');
+    map.getPane('pane_rooms').style.zIndex = 401;
+    map.getPane('pane_rooms').style['mix-blend-mode'] = 'normal';
+
+    // Create employees layer opts
+    var get_employees_url = '{% url ""|add:emps_data_url floor=floor_no %}';
+    emp_opts = {
+        onEachFeature: pop_employees,
+        pointToLayer: set_marker,
+        pane: 'pane_employees',
+    }
+    // Create rooms layer opts
+    var get_rooms_url = '{% url ""|add:room_data_url floor=floor_no %}';
+    rooms_opts = {
+        onEachFeature: pop_rooms,
+        style: style_rooms,
+        pane: 'pane_rooms',
+    };
+
+    // Asynchronously load layers and add to map
+    addOverlay(get_employees_url, 'employees', emp_opts, map)
+    addOverlay(get_rooms_url, 'rooms', rooms_opts, map)
+
+</script>
+    <style>
+        .container {
+        display: flex;
+        flex-direction: column;
+        width: auto;
+    }
+    a:hover {
+        background-color: green;
+    }
+    </style>
+
+    <script>
+        map.attributionControl.addAttribution('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a>');
+        // Create legend part
+
+        function getColor(wingName) {
+            wingToColor = {
+                'A': '#b5df97',
+                'B': '#f09986',
+                'C': '#f59053',
+                'D': '#fdbe73',
+                'E': '#fede99',
+                'F': '#ffffbf',
+                'G': '#ddefcf',
+                'H': '#bce143',
+                'P': '#91c6de',
+                'S': '#5ea0ca'
+            }
+            return wingToColor[wingName]
+        };
+
+        var legend = L.control({position: 'topleft'});
+        legend.onAdd = function (map) {
+
+            var div = L.DomUtil.create('div', 'info legend'),
+            wings = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'P', 'S'],
+            labels = [];
+
+            // loop through our density intervals and generate a label with a colored square for each interval
+            div.innerHTML += `<div class="container">`
+            for (var i = 0; i < wings.length; i++) {
+                var path = 'legend/Wing' + wings[i] + '.png'
+                div.innerHTML += `
+                                    <div style="display: flex; flex-direction: row; width: 100px;">
+                                        <div style="background-color: ${getColor(wings[i])}; width: 20px; height: 20px; border: 1px solid rgba(0, 0, 0, .2)">
+                                        <div style="padding-left: 21px; margin-left: 20px;"><b>${wings[i]}</b>&nbspWing&nbsp;</div>
+                                    </div>`
+            }
+            div.innerHTML += `</div>`
+            return div;
+        };
+        legend.addTo(map);
+
+        </script>
+{% endblock content %}
+    </body>
+</html>
