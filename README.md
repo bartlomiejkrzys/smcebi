@@ -25,7 +25,7 @@ docker-compose up --build
 
 ### Prerequisites
 
-What things you need to install the software and how to install them
+What things you need to install beforehand and how to install them
 
 ## For Ubuntu
 
@@ -38,6 +38,7 @@ sudo apt-get install git
 ## For Windows
 
 Docker https://docs.docker.com/docker-for-windows/install/
+
 Git https://git-scm.com/download/win
 
 
